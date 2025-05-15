@@ -53,9 +53,18 @@ InitZeros:
 	// x0: address of (pointer to) the first symbol of input array
 	// output:
 	// x1: value specifying the number of values that will be set to 0
-	// ...
-	// Implement this part
-	// ...
+ 
+	ADDI X1, X1, #1
+	ADDI X9, XZR, #0
+	ORR X11, X0, XZR
+	ADDI X10, XZR, #0
+	
+loop:	STUR X10,[X11, #0]
+	ADDI X9, X9, #1
+	ADDI X11, X11, #8
+	SUBS XZR, X9, X1
+	B.LT loop
+ 
 	br lr
 
 
