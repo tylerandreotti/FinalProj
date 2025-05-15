@@ -128,6 +128,42 @@ NaiveMult:
 	// ...
 	// Implement this part
 	// ...
+	LSL X4, X3, #1//dr=2d
+	SUBI SP, SP, #8
+	STUR X1, [SP, #0]
+	ADD X1, XZR, X4
+	BL InitZeros
+	LDUR X1, [SP, #0]
+	ADDI SP, SP, #8
+	ADDI X5, XZR, #0//i=0
+	ADDI X6, XZR, #0//j=0
+	iloopcheck:
+	ADDI X5, X5, #1
+	SUBS XZR, X5, X3
+	B.GT iloopend
+	jloopcheck:
+	ADDI X6, X6, #1
+	SUBS XZR, X6, X3
+	B.GT jloopend
+	LSL X7, X5, #3//i*8
+	LSL X8, X6, #3//j*8
+	ADD X9, X7, X8//(i+j)*8
+	ADD X7, X7, X1//P[i]ref
+	ADD X8, X8, X2//Q[j]ref
+	ADD X9, X9, X0//R[i+j]ref
+	ADDI X10, X9, #0//holdR[i+j]ref
+	LDUR X7, [X7, #0]
+	LDUR X8, [X8, #0]
+	LDUR X9, [X9, #0]
+	MUL X7, X7, X8
+	ADD X7, X7, X9
+	STUR X7, [X10, #0]
+	ADDI X6, X6, #1
+	B jloopcheck
+	jloopend:
+	ADDI X5, X5, #1
+	B iloopcheck
+	iloopend:
 	br lr
 
 
