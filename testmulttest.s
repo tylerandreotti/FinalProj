@@ -6,7 +6,6 @@ main:
 	bl TestMult	// Uncomment to test Naive implementation first
 	stop
 
-
 InitZeros:
 	// input:
 	// x0: address of (pointer to) the first symbol of input array
@@ -24,6 +23,8 @@ loop:	STUR X10,[X11, #0]
 	B.LT loop
  
 	br lr
+
+
 
 NaiveMult:
 	// input:
@@ -48,7 +49,7 @@ NaiveMult:
 	ADDI X21, X2, #0	
 
 	LSL X4, X3, #1 //dr=2d
-	
+	ADDI X4, X4, #1	
 	ADDI X1, X4, #0 //InitZero takes (R,dr) and R is already in X0, this movs dr to X1
 	BL InitZeros //InitZeros func call
 
@@ -119,7 +120,7 @@ TestMult:
 	// bl KaratsubaMult	// uncomment this to test Karatsuba's
 
 	// Prepare to print
-	addi x0, x1, #0		// load output array pointer to x0
+	lda x1, array_R
 	ldur x2, [sp, #0]	// load k
 	lsl  x2, x2, #1		// x3 gets 2k
 	addi x2, x2, #1		// x3 gets 2k+1
