@@ -24,28 +24,27 @@ init_loop:
 
 // Rewritten NaiveMult with safety checks and cleaner loop structure
 NaiveMult:
-    // Save registers
-    SUBI SP, SP, #40
+    // Save registers - use standard 32-byte allocation
+    SUBI SP, SP, #32
     STUR X19, [SP, #0]
     STUR X20, [SP, #8]
     STUR X21, [SP, #16]
-    STUR X22, [SP, #24]      // Save degree for safety
-    STUR LR, [SP, #32]
+    STUR LR, [SP, #24]
     
     // Save parameters
     ADDI X19, X0, #0        // R (output array)
     ADDI X20, X1, #0        // P (first polynomial)
     ADDI X21, X2, #0        // Q (second polynomial)
-    ADDI X22, X3, #0        // degree d
+    // Use X3 directly for degree (don't save in X22)
     
     // Safety check on degree
-    SUBI X28, X22, #10      // Check if degree > 10
+    SUBI X28, X3, #10       // Check if degree > 10
     B.LE degree_safe
-    ADDI X22, XZR, #3       // Cap degree at 3 for safety
+    ADDI X3, XZR, #3        // Cap degree at 3 for safety
 degree_safe:
     
     // Calculate number of result coefficients: 2d + 1
-    LSL X4, X22, #1         // 2d
+    LSL X4, X3, #1          // 2d
     ADDI X4, X4, #1         // 2d + 1
     
     // Initialize result array
@@ -57,14 +56,14 @@ degree_safe:
     ADDI X5, XZR, #0        // i = 0
     
 outer_loop:
-    SUBS XZR, X5, X22       // compare i with d
+    SUBS XZR, X5, X3        // compare i with d
     B.GT outer_done         // exit if i > d
     
     // Inner loop: j from 0 to d (reset j for each i)
     ADDI X6, XZR, #0        // j = 0
     
 inner_loop:
-    SUBS XZR, X6, X22       // compare j with d
+    SUBS XZR, X6, X3        // compare j with d
     B.GT inner_done         // exit if j > d
     
     // Calculate array indices and addresses
@@ -101,9 +100,8 @@ outer_done:
     LDUR X19, [SP, #0]
     LDUR X20, [SP, #8]
     LDUR X21, [SP, #16]
-    LDUR X22, [SP, #24]
-    LDUR LR, [SP, #32]
-    ADDI SP, SP, #40
+    LDUR LR, [SP, #24]
+    ADDI SP, SP, #32
     
     br lr
 
