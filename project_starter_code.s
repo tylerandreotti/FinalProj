@@ -14,11 +14,11 @@
 //////////////////////////
 main:
 
-	bl TestPrint
-	stop
+	//bl TestPrint
+	//stop
 
-	bl TestMult		// Uncomment to test Naive implementation first
-	// stop 
+	bl TestMult	// Uncomment to test Naive implementation first
+	stop 
 
 	// Test the partitioned algoirthm 
 	lda  x2, array_D
@@ -89,12 +89,12 @@ MakeCumulative:
 	STUR XZR, [X10, #0] //D[0]=0
 	loopcheck:
 	LSL X9, X3, #3
-	LDUR X12, [X10, 0]
-	ADDIS XZR, X10, #1//compare D[i] to -1
-	B.EQ loopend
+	LDUR X12, [X10, #0]
+	ADDI X13, X10, #1//compare D[i] to -1
+	CBZ X13, loopend
 	ADDI X13, X12, #1//+1
 	ADD X13, X13, X11//+c
-	STUR X12, [X10, 0]//D[i]val=D[i]val+c+1
+	STUR X12, [X10, #0]//D[i]val=D[i]val+c+1
 	ADDI X11, X12, #0 //c=D[i+1] val
 	ADDI X3, X3, #1//i=i+1
 	B loopcheck
@@ -190,6 +190,8 @@ NaiveMult:
 
 	ADDI X5, X5, #1 //i++
 	B iloopNM
+
+	iloopendNM:
 
 	LDUR X19, [SP, #0] //restore X19-X21,LR regs
 	LDUR X20, [SP, #8]
