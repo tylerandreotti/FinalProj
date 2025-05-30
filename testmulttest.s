@@ -54,16 +54,13 @@ NaiveMult:
 	BL InitZeros //InitZeros func call
 
 	ADDI X5, XZR, #0 //i=0
-	ADDI X28, XZR, #0 //safety counter - ADD THIS
 
 	iloopNM:
-	ADDI X28, X28, #1 //increment counter - ADD THIS
-	SUBI X29, X28, #20 //check if > 20 iterations - ADD THIS  
-	B.GT iloopendNM //force exit - ADD THIS
 
 	SUBS XZR, X5, X3 //check i with d
 	B.GT iloopendNM //end loop if i>d
 
+	ADDI X6, XZR, #0 //j=0
 
 	jloopNM:
 
