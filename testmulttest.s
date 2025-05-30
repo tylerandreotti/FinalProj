@@ -13,7 +13,6 @@ InitZeros:
 	// output:
 	// x1: value specifying the number of values that will be set to 0
  
-	ADDI X1, X1, #1
 	ADDI X9, XZR, #0
 	ORR X11, X0, XZR
 	ADDI X10, XZR, #0
@@ -69,7 +68,8 @@ NaiveMult:
 
 	LSL X7, X5, #3 //byte index i
 	LSL X8, X6, #3 //byte index j
-	ADD X9, X7, X8 //byte indexed i+j
+	ADD X9, X5, X6 //i+j	
+	LSL X9, X9, #3 //i+j byte indexed
 
 	ADD X10, X20, X7 //mem address P[i]
 	ADD X11, X21, X8 //mem address Q[j]
