@@ -17,7 +17,6 @@ loop:
     br lr
 
 NaiveMult:
-    // Use your EXACT original structure, just fix the loop logic
     SUBI SP, SP, #32
     STUR X19, [SP, #0]
     STUR X20, [SP, #8]
@@ -28,47 +27,46 @@ NaiveMult:
     ADDI X20, X1, #0 
     ADDI X21, X2, #0
     
-    LSL X4, X3, #1
-    ADDI X4, X4, #1         // Add the +1 fix
+    // Temporarily skip InitZeros to isolate the issue
+    // LSL X4, X3, #1
+    // ADDI X4, X4, #1
+    // ADDI X1, X4, #0
+    // BL InitZeros
     
-    ADDI X1, X4, #0
-    BL InitZeros
+    ADDI X5, XZR, #0
     
-    ADDI X5, XZR, #0        // i=0
+iloopNM:
+    SUBS XZR, X5, X3
+    B.GT iloopendNM
     
-    // FIXED LOOP STRUCTURE - this is the only major change
-iloop:
-    SUBS XZR, X5, X3        // check i with d
-    B.GT iloop_end          // end loop if i>d
+    ADDI X6, XZR, #0
     
-    ADDI X6, XZR, #0        // j=0 - INSIDE i-loop
+jloopNM:
+    SUBS XZR, X6, X3
+    B.GT jloopendNM
     
-jloop:
-    SUBS XZR, X6, X3        // check j with d
-    B.GT jloop_end          // end loop if j>d
+    LSL X7, X5, #3
+    LSL X8, X6, #3
+    ADD X9, X5, X6
+    LSL X9, X9, #3
+    ADD X10, X20, X7
+    ADD X11, X21, X8
+    ADD X12, X19, X9
+    LDUR X13, [X10, #0]
+    LDUR X14, [X11, #0]
+    LDUR X15, [X12, #0]
+    MUL X16, X13, X14
+    ADD X17, X15, X16
+    STUR X17, [X12, #0]
     
-    LSL X7, X5, #3          // byte index i
-    LSL X8, X6, #3          // byte index j
-    ADD X9, X5, X6          // i+j	
-    LSL X9, X9, #3          // i+j byte indexed
-    ADD X10, X20, X7        // mem address P[i]
-    ADD X11, X21, X8        // mem address Q[j]
-    ADD X12, X19, X9        // mem address R[i+j]
-    LDUR X13, [X10, #0]     // P[i] val
-    LDUR X14, [X11, #0]     // Q[j] val
-    LDUR X15, [X12, #0]     // R[i+j] val
-    MUL X16, X13, X14       // val P[i]*Q[j]
-    ADD X17, X15, X16       // val R[i+j]+P[i]*Q[j]
-    STUR X17, [X12, #0]     // put above val in R[i+j] address
+    ADDI X6, X6, #1
+    B jloopNM
     
-    ADDI X6, X6, #1         // j++
-    B jloop
+jloopendNM:
+    ADDI X5, X5, #1
+    B iloopNM
     
-jloop_end:
-    ADDI X5, X5, #1         // i++
-    B iloop
-    
-iloop_end:
+iloopendNM:
     LDUR X19, [SP, #0]
     LDUR X20, [SP, #8]
     LDUR X21, [SP, #16]
@@ -91,7 +89,6 @@ TestMult:
     stur x3, [sp, #0]
     bl NaiveMult
     
-    // Prepare to print
     lda  x1, array_R
     ldur x2, [sp, #0]
     lsl  x2, x2, #1
